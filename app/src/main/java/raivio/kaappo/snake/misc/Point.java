@@ -16,4 +16,12 @@ public class Point extends Pair<Integer, Integer> {
     public Point offsetX (int x) {
         return new Point(getX() + x, getY());
     }
+
+    public Point offsetY (int y) {
+        return new Point(getX(), getY() + y);
+    }
+
+    public Point offset (Point other) {
+        return new Point(getX() + other.getX(), getY() + other.getY());
+    }
 }
