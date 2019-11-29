@@ -5,18 +5,18 @@ import java.util.Random;
 import raivio.kaappo.snake.misc.Point;
 
 public class Snake {
-    public static final int BIG = 0x1234;
+    private static final int BIG = 0x1234;
 
-    public static final int FOOD = 1;
-    public static final int BLANK = 0;
+    static final int FOOD = 1;
+    static final int BLANK = 0;
 
     private int[][] matrix;
-    private Point dimensions;
+    volatile private Point dimensions;
     private Point snakeHeadPosition;
     private boolean isLost = false;
     private int score = 0;
 
-    public Snake (Point dimensions, Point startPosition) {
+    Snake (Point dimensions, Point startPosition) {
         matrix = new int[BIG][BIG];
         this.dimensions = dimensions;
         initializeSnake(startPosition);
@@ -29,13 +29,13 @@ public class Snake {
     }
 
     private void setSquare (Point point, int value) {
-        matrix[point.getY() % dimX()][point.getX() % dimY()] = value;
+        matrix[Math.abs(point.getY() % dimY())][Math.abs(point.getX() % dimX())] = value;
     }
 
-    public void summonFood () {
+    private void summonFood () {
         while (true) {
-            int y = new Random().nextInt(matrix.length);
-            int x = new Random().nextInt(matrix[y].length);
+            int y = new Random().nextInt(dimY());
+            int x = new Random().nextInt(dimX());
 
             if (getSquare(new Point(x, y)) == 0) {
                 setSquare(new Point(x, y), FOOD);
@@ -46,36 +46,14 @@ public class Snake {
     }
 
     private int getSquare (Point point) {
-        return matrix[point.getY() % matrix.length][point.getX() % matrix[point.getY() % matrix.length].length];
-    }
-
-    public static void main (String[] args) {
-        Snake snake = new Snake(new Point(10, 10), new Point(5, 5));
-
-        int c = 0;
-        while (true) {
-            snake.step(new Point(FOOD, 0));
-            System.out.println(snake);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (c % 2 == 0) {
-                snake.eat();
-                snake.step(new Point(0, FOOD));
-            }
-
-            c++;
-        }
+        return getSquare(point.getX(), point.getY());
     }
 
     int getSquare (int x, int y) {
-        return matrix[y % matrix.length][x % matrix[y % matrix.length].length];
+        return matrix[Math.abs(y % dimY())][Math.abs(x % dimX())];
     }
 
-    public void step (Point direction) {
+    void step (Point direction) {
         Point newSquare = snakeHeadPosition.offset(direction);
 
         if (getSquare(newSquare) < 0 || isLost) {
@@ -143,7 +121,7 @@ public class Snake {
         return isLost;
     }
 
-    public int getScore () {
+    int getScore () {
         return score;
     }
 
@@ -151,11 +129,18 @@ public class Snake {
         return matrix;
     }
 
-    public int dimX () {
+    int dimX () {
         return dimensions.getX();
     }
 
-    public int dimY () {
-        return dimensions.getX();
+    int dimY () {
+        return dimensions.getY();
+    }
+
+    void resize (Point dimensions) {
+        if (dimensions.getX() < matrix[0].length && dimensions.getY() < matrix.length) {
+            System.out.println("Resizing! " + dimensions);
+            this.dimensions = dimensions;
+        }
     }
 }

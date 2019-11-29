@@ -80,14 +80,12 @@ public class GameActivity extends AppCompatActivity {
 
     class Game extends AsyncTask<Void, Void, Integer> {
         volatile private Point movement = new Point(1, 0);
-        private TextView view;
         private Activity context;
         private Snake snake;
 
         public Game (TextView view, Activity context, Point dimensions, Point startPosition) {
 
             super();
-            this.view = view;
             this.context = context;
             snake = new Snake(dimensions, startPosition);
 

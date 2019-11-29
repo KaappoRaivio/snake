@@ -24,4 +24,9 @@ public class Point extends Pair<Integer, Integer> {
     public Point offset (Point other) {
         return new Point(getX() + other.getX(), getY() + other.getY());
     }
+
+    @Override
+    public String toString () {
+        return "(" + getX() + ", " + getY() + ")";
+    }
 }

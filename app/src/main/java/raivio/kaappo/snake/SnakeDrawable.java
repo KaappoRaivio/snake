@@ -4,22 +4,18 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
-import android.graphics.drawable.shapes.Shape;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import raivio.kaappo.snake.misc.Point;
 
 public class SnakeDrawable extends View {
-    private static final int SQUARE_SIDE_LENGTH = 100;
+    private static int SQUARE_SIDE_LENGTH = 50;
 
 
     private Snake snake;
@@ -34,13 +30,6 @@ public class SnakeDrawable extends View {
     public SnakeDrawable (Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-//        drawable = new ShapeDrawable(new OvalShape());
-//        drawable2 = new ShapeDrawable(new OvalShape());
-//        drawable.getPaint().setColor(0xcafebabe);
-//        drawable2.getPaint().setColor(0xffabcdef);
-//
-//        drawable.setBounds(0, 0, 640, 400);
-//        drawable2.setBounds(640, 400, 680, 500);
         blankShape = new ShapeDrawable(new RectShape());
         apple = new ShapeDrawable(new RectShape());
         worm = new ShapeDrawable(new RectShape());
@@ -59,9 +48,27 @@ public class SnakeDrawable extends View {
         invalidate();
     }
 
+    private Rect rect = new Rect();
+
     @Override
     protected void onDraw (Canvas canvas) {
         Objects.requireNonNull(snake);
+
+        canvas.getClipBounds(rect);
+
+        int width = rect.width();
+        int height = rect.height();
+
+
+        int remainder = width % SQUARE_SIDE_LENGTH;
+        float squareDimX = width / SQUARE_SIDE_LENGTH;
+        int squareDimY = height / SQUARE_SIDE_LENGTH;
+        SQUARE_SIDE_LENGTH += remainder / squareDimX;
+
+        System.out.println(width + ", " + height + ", " + squareDimX + ", " + squareDimY);
+
+        snake.resize(new Point((int) squareDimX, squareDimY));
+        System.out.println(snake.dimY());
 
         for (int y = 0; y < snake.dimY(); y++) {
             for (int x = 0; x < snake.dimX(); x++) {

@@ -8,11 +8,24 @@
 
     <raivio.kaappo.snake.SnakeDrawable
         android:id="@+id/snake"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </raivio.kaappo.snake.SnakeDrawable>
+
+    <ImageView
+        android:id="@+id/game_over"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/snake"
+        app:layout_constraintStart_toStartOf="@+id/snake"
+        app:layout_constraintTop_toTopOf="@+id/snake"
+
+        android:src="@drawable/game_over"
+        android:visibility="invisible"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
