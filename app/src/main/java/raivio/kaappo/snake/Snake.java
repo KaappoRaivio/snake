@@ -9,11 +9,12 @@ public class Snake {
 
     static final int FOOD = 1;
     static final int BLANK = 0;
+    public static final int GROWTH_WHEN_EATING = 5;
 
     private int[][] matrix;
     volatile private Point dimensions;
     private Point snakeHeadPosition;
-    private boolean isLost = false;
+    private boolean lost = false;
     private int score = 0;
 
     Snake (Point dimensions, Point startPosition) {
@@ -56,8 +57,9 @@ public class Snake {
     void step (Point direction) {
         Point newSquare = snakeHeadPosition.offset(direction);
 
-        if (getSquare(newSquare) < 0 || isLost) {
-            isLost = true;
+        if (getSquare(newSquare) < 0 || lost) {
+            System.out.println("LOST");
+            lost = true;
             return;
         } else if (getSquare(newSquare) == FOOD) {
             eat();
@@ -84,7 +86,7 @@ public class Snake {
             for (int x = 0; x < dimX(); x++) {
                 int value = getSquare(new Point(x, y));
                 if (value < 0) {
-                    setSquare(new Point(x, y), value - 1);
+                    setSquare(new Point(x, y), value - GROWTH_WHEN_EATING);
                 }
             }
         }
@@ -117,8 +119,8 @@ public class Snake {
         return builder.toString();
     }
 
-    public boolean isLost () {
-        return isLost;
+    boolean isLost () {
+        return lost;
     }
 
     int getScore () {

@@ -4,13 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import raivio.kaappo.snake.misc.OnSwipeTouchListener;
 import raivio.kaappo.snake.misc.Point;
@@ -25,12 +23,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-
-        game = new Game(findViewById(R.id.text), this, new Point(10, 10), new Point(5, 5));
-
         drawable = findViewById(R.id.snake);
-        drawable.attachSnakeInstance(game.getSnake());
-
         drawable.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeRight () {
@@ -55,7 +48,7 @@ public class GameActivity extends AppCompatActivity {
 
         });
 
-        game.execute();
+        onReset(null);
     }
 
     @Override
@@ -97,24 +90,52 @@ public class GameActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground (Void... points) {
-            while (!isCancelled() || !snake.isLost()) {
+            while (!isCancelled() && !snake.isLost()) {
                 snake.step(movement);
                 context.runOnUiThread(() -> {
                     drawable.reDraw();
+
                 });
 
                 try {
-                    Thread.sleep(500L);
+                    Thread.sleep(250L);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
+            context.runOnUiThread(() -> {
+                onGameOver(snake.getScore());
+            });
             return snake.getScore();
         }
 
         void updateMovement (Point movement) {
             this.movement = movement;
         }
+    }
+
+    public void onGameOver (int score) {
+        System.out.println("moi");
+        findViewById(R.id.game_over).setVisibility(View.VISIBLE);
+        findViewById(R.id.container).setVisibility(View.VISIBLE);
+        findViewById(R.id.score).setVisibility(View.VISIBLE);
+        findViewById(R.id.reset).setVisibility(View.VISIBLE);
+
+        ((TextView) findViewById(R.id.score)).setText(((TextView) findViewById(R.id.score)).getText().toString() + score);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void onReset (View view) {
+        game = new Game(findViewById(R.id.text), this, new Point(10, 10), new Point(5, 5));
+
+        findViewById(R.id.game_over).setVisibility(View.INVISIBLE);
+        findViewById(R.id.container).setVisibility(View.INVISIBLE);
+        findViewById(R.id.score).setVisibility(View.INVISIBLE);
+        findViewById(R.id.reset).setVisibility(View.INVISIBLE);
+
+        drawable.attachSnakeInstance(game.getSnake());
+
+        game.execute();
     }
 }
